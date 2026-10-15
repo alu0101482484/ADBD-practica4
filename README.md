@@ -79,111 +79,37 @@ Estado final de la base de datos, después de los `DELETE`.
 
 Viveros de la empresa. `VIV-GR06` no aparece porque se borra en los ejemplos de `DELETE`.
 
-```
-viveros=# SELECT * FROM vivero;
- cod_vivero |      nombre       | telefono  |  latitud  |  longitud  
-------------+-------------------+-----------+-----------+------------
- VIV-LL01   | Vivero La Laguna  | 922123456 | 28.487400 | -16.315900
- VIV-AD02   | Vivero Adeje      | 922712345 | 28.122700 | -16.726000
- VIV-SC03   | Vivero Santa Cruz | 922234567 | 28.463600 | -16.251800
- VIV-OR04   | Vivero La Orotava | 922334455 | 28.390800 | -16.523600
- VIV-IC05   | Vivero Icod       | 922815566 | 28.367300 | -16.719800
-(5 rows)
-```
+![](IMG_SELECT/SELECT_viveros.png)
 
 ### `zona`
 
 Entidad débil de `vivero`: su clave es `(cod_vivero, cod_zona)`. La zona `VIV-SC03/2` no tiene coordenadas.
 
-```
-viveros=# SELECT * FROM zona;
- cod_vivero | cod_zona |    tipo     |  latitud  |  longitud  
-------------+----------+-------------+-----------+------------
- VIV-LL01   |        1 | exterior    | 28.487300 | -16.315800
- VIV-LL01   |        2 | almacén     | 28.487600 | -16.316100
- VIV-LL01   |        3 | exposición  | 28.487500 | -16.315700
- VIV-AD02   |        1 | exterior    | 28.122600 | -16.725900
- VIV-AD02   |        2 | invernadero | 28.122900 | -16.726200
- VIV-SC03   |        1 | interior    | 28.463500 | -16.251700
- VIV-SC03   |        2 | exposición  |           |           
- VIV-OR04   |        1 | invernadero | 28.390900 | -16.523500
- VIV-IC05   |        1 | exterior    | 28.367200 | -16.719700
-(9 rows)
-```
+![](IMG_SELECT/SELECT_zona.png)
 
 ### `producto`
 
 Catálogo de productos. `JAR-00099` tiene precio 0 (producto promocional).
 
-```
-viveros=# SELECT * FROM producto;
- cod_producto |             nombre              | categoria  | precio 
---------------+---------------------------------+------------+--------
- PLT-00125    | Drago canario (maceta 20 cm)    | planta     |  24.95
- PLT-00210    | Tajinaste rojo (maceta 15 cm)   | planta     |  18.50
- PLT-00340    | Cardón canario (maceta 12 cm)   | planta     |  12.00
- JAR-00011    | Sustrato universal 50 L         | jardinería |   9.95
- JAR-00057    | Tijera de poda profesional      | jardinería |  15.90
- JAR-00099    | Muestra de semillas (promoción) | jardinería |   0.00
- DEC-00003    | Maceta de barro 30 cm           | decoración |   7.50
-(7 rows)
-```
+![](IMG_SELECT/SELECT_producto.png)
 
 ### `almacena`
 
 Relación N:M entre `zona` y `producto`, con el `stock`. Un mismo producto puede estar en varias zonas, y hay uno agotado (stock 0).
 
-```
-viveros=# SELECT * FROM almacena;
- cod_vivero | cod_zona | cod_producto | stock 
-------------+----------+--------------+-------
- VIV-LL01   |        1 | PLT-00340    |    40
- VIV-LL01   |        2 | JAR-00011    |   120
- VIV-LL01   |        2 | DEC-00003    |    60
- VIV-LL01   |        3 | PLT-00125    |    35
- VIV-LL01   |        3 | PLT-00210    |     0
- VIV-AD02   |        2 | PLT-00125    |    18
- VIV-AD02   |        2 | PLT-00210    |    22
- VIV-SC03   |        1 | JAR-00057    |    15
- VIV-SC03   |        2 | PLT-00125    |     9
- VIV-OR04   |        1 | PLT-00340    |    55
-(10 rows)
-```
+![](IMG_SELECT/SELECT_almacena.png)
 
 ### `empleado`
 
 Empleados de la empresa. Laura todavía no tiene puesto (recién contratada).
 
-```
-viveros=# SELECT * FROM empleado;
-    dni    | nombre |    apellidos     |             email             | fecha_contratacion 
------------+--------+------------------+-------------------------------+--------------------
- 45123456K | Carmen | Hernández Pérez  | carmen.hernandez@tajinaste.es | 2023-03-01
- 41234567L | Luis   | Rodríguez Afonso | luis.rodriguez@tajinaste.es   | 2022-01-15
- 43456789B | Ana    | Martín Cabrera   | ana.martin@tajinaste.es       | 2024-02-01
- 42345678M | Pedro  | García Delgado   | pedro.garcia@tajinaste.es     | 2021-09-01
- 44567890X | Laura  | Suárez Mesa      | laura.suarez@tajinaste.es     | 2026-10-01
-(5 rows)
-```
+![](IMG_SELECT/SELECT_empleado.png)
 
 ### `puesto`
 
 Histórico de puestos de cada empleado. Una `fecha_fin` vacía indica el puesto actual, y `objetivo_ventas` solo se usa en tareas de venta.
 
-```
-viveros=# SELECT * FROM puesto;
- dni_empleado | fecha_inicio | fecha_fin  | cod_vivero | cod_zona |        tarea        | objetivo_ventas | productividad 
---------------+--------------+------------+------------+----------+---------------------+-----------------+---------------
- 45123456K    | 2026-01-10   | 2026-05-31 | VIV-AD02   |        1 | riego               |                 |          95.0
- 45123456K    | 2026-06-01   | 2026-09-30 | VIV-LL01   |        3 | atención al cliente |         5000.00 |         112.0
- 45123456K    | 2026-10-01   |            | VIV-LL01   |        2 | reposición          |                 |              
- 41234567L    | 2025-01-01   | 2025-12-31 | VIV-LL01   |        3 | caja                |         8000.00 |          98.5
- 41234567L    | 2026-01-01   |            | VIV-SC03   |        2 | atención al cliente |         6000.00 |              
- 43456789B    | 2024-02-01   | 2025-06-30 | VIV-AD02   |        2 | poda                |                 |         101.0
- 43456789B    | 2025-07-01   |            | VIV-OR04   |        1 | riego               |                 |              
- 42345678M    | 2021-09-01   |            | VIV-SC03   |        1 | logística           |                 |              
-(8 rows)
-```
+![](IMG_SELECT/SELECT_puesto.png)
 
 ### `cliente`
 
